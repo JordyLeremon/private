@@ -1,0 +1,9 @@
+2
+LOOP : 1 0
+	<div class="popup sensor" onclick="popup( 'myPopupGraph0')"><img src="../img/graphs.png" height="25" width="25" >
+					  										<span class="popuptext" id="myPopupGraph0">
+						  										<iframe src="graph.php?id=28&typeID=9" width="100%" height="300">
+						  											<p>Your browser does not support iframes.</p>
+																</iframe>
+															</span>
+														</div><br>

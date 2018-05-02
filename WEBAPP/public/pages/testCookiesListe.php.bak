@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Test</title>
+<script type="text/javascript">//<![CDATA[
+ 
+        function createCookie(name,value,days) {
+                if (days) {
+                        var date = new Date();
+                        date.setTime(date.getTime()+(days*24*60*60*1000));
+                        var expires = "; expires="+date.toGMTString();
+                }
+                else var expires = "";
+                document.cookie = name+"="+value+expires+"; path=/";
+        }
+        function readCookie(name) {
+                var nameEQ = name + "=";
+                var ca = document.cookie.split(';');
+                for(var i=0;i < ca.length;i++) {
+                        var c = ca[i];
+                        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+                }
+                return null;
+        }
+        function eraseCookie(name) {
+                createCookie(name,"",-1);
+        }
+ 
+        function update_Selection(){
+                var v=document.getElementById('list').value;
+                if(v)
+                        createCookie('selectedValue',v);
+                else
+                        eraseCookie('selectedValue');
+        	self.location.href="http://selfeden.fr/pages/index.php";
+	}
+ 
+        function init_Selection(){
+                var v=readCookie('selectedValue');
+                if(v)document.getElementById('list').options[v].selected=true;
+        }
+
+        window.onload=init_Selection;
+//]]>
+</script>
+</head>
+<body>
+<form action="#" method="get">
+	<p>
+		<label for="list">Votre sélection :</label>
+		<select name="list" id="list" onchange="update_Selection();">
+			<option value="" selected="selected">Choisissez un élément</option>
+			<option value="1">Air</option>
+			<option value="2">Eau</option>
+			<option value="3">Terre</option>
+			<option value="4">Feu</option>
+		</select>
+	</p>
+</form>
+<?php echo $_COOKIE['selectedValue']  ?>
+</body>
+</html>
+

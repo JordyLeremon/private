@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<translations>
+
+    <!--
+    ValiderInscription
+    -->
+    <translation id="langEntrerInformations">
+        <eng>Please fill following fields</eng>
+        <fr>Merci de remplir les champs indiqués</fr>
+    </translation>
+
+    <!--
+    ValiderInscription
+    -->
+    <translation id="langValiderInscription">
+        <eng>Validate</eng>
+        <fr>Valider</fr>
+    </translation>
+
+</translations>

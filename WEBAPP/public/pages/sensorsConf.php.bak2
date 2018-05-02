@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<?php
+	session_start();
+	require_once('../php/Database.php');
+	require_once('../php/RecupConf.php');
+	$conf = new RecupConf();
+	$database = new Database($conf->getDbName(), $conf->getDbLogin(), $conf->getDbPasswd());
+	if(!isset($_SESSION['email']) || empty($_SESSION['email']))
+		header('Location: login.php');
+	if(empty($_GET['id'])){
+		echo "<script>window.close();</script>";
+	}
+	$user_id = $database->select("user", "id", "email", $_SESSION['email'])[0];
+	
+	$sensor_id = $_GET['id'];
+	$sensor_offset = $_GET['offset'];
+	
+	
+	$typeId = $database->sqlRequest("SELECT sensortype.typeId FROM sensortype WHERE sensorId ='".$sensor_id."';", "typeId")[$sensor_offset];
+	$sensor_type = $database->select("type","type","id",$typeId)[0];
+	
+	$sensor_serial = $database->sqlRequest("SELECT serialNumber FROM sensor WHERE sensor.id = ".$sensor_id , "serialNumber");
+	$sensor_name = $database->sqlRequest("SELECT sensorNamePerso FROM usersensor WHERE usersensor.sensorId = ".$sensor_id , "sensorNamePerso");
+	$sensor_min = $database->sqlRequest("SELECT min FROM sensor WHERE id='".$sensor_id."'","min");
+	$sensor_max = $database->sqlRequest("SELECT max FROM sensor WHERE id=".$sensor_id."","max");
+//	$sensor_min = $database->sqlRequest("SELECT min FROM historysensor WHERE sensorId='".$sensor_id."' AND typeId='".$typeId."' ORDER BY date DESC","min");
+//	$sensor_max = $database->sqlRequest("SELECT max FROM historysensor WHERE sensorId=".$sensor_id." ORDER BY date DESC","max");
+	$timers_id = $database->sqlRequest("SELECT id FROM timer, usertimer WHERE timer.id = usertimer.timerId AND usertimer.userId = ".$user_id , "id");
+	$assoc = $database->count("sensortimer","*","sensorId",$sensor_id);
+	$infMin = $database->select("sensortype","infMin","sensorId",$sensor_id,"typeId",$typeId,"sensorId",$sensor_id);
+
+	$utf8 = 0;
+
+	if ($infMin == "")
+		$infMin = 0;
+	else
+		$infMin = $infMin[0];
+	$supMax = $database->select("sensortype","supMax","sensorId",$sensor_id,"typeId",$typeId,"sensorId",$sensor_id);
+	if ($supMax == "")
+		$supMax = 0;
+	else
+		$supMax = $supMax[0];
+	if ($assoc > 0)
+	{
+		$timer_associated = $database->sqlRequest('SELECT timerId FROM sensortimer WHERE sensorId='.$sensor_id,'timerId')[0];
+		$infMin_associated = $database->sqlRequest('SELECT infMin FROM sensortimer WHERE sensorId='.$sensor_id.' AND timerId='.$timer_associated,'infMin')[0];
+		$supMin_associated = $database->sqlRequest('SELECT supMin FROM sensortimer WHERE sensorId='.$sensor_id.' AND timerId='.$timer_associated,'supMin')[0];
+		$infMax_associated = $database->sqlRequest('SELECT infMax FROM sensortimer WHERE sensorId='.$sensor_id.' AND timerId='.$timer_associated,'infMax')[0];
+		$supMax_associated = $database->sqlRequest('SELECT supMax FROM sensortimer WHERE sensorId='.$sensor_id.' AND timerId='.$timer_associated,'supMax')[0];
+	}
+	else{
+		$timer_associated = 0;
+		$infMin_associated = 0;
+		$supMin_associated = 0;
+		$infMax_associated = 0;
+		$supMax_associated = 0;
+	}
+	if($sensor_name[0] == ""){
+		$sensor_name = $database->sqlRequest("SELECT nom FROM type WHERE type.id = ".$sensor_id , "nom");
+		$utf8 = 1;
+	}
+
+ ?>
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Selfeden</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
+	<link href="../dist/css/selfeden.css" rel="stylesheet">
+	<link href="../dist/css/slider.css" rel="stylesheet">
+
+    <!-- Morris Charts CSS -->
+    <link href="../vendor/morrisjs/morris.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+	<h2 style="text-align: center">Configuration Capteur</h2>
+	<br>
+	<form>
+		
+		<div class="row">
+			<div class="col-xs-offset-3 col-xs-4 col-sm-offset-4 col-sm-2 col-md-offset-4 col-md-2">
+				<p><u>N° de série :</u></p>
+			</div>
+			<div class="col-xs-2 col-sm-2 col-md-2">
+				<?php echo "#".$sensor_serial[0];?>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-offset-2 col-xs-3 col-sm-offset-3 col-sm-2 col-md-offset-4 col-md-2">
+				<p><u>Nom du capteur :</u></p>
+			</div>
+			<div class="col-xs-5 col-sm-4 col-md-2">
+				<?php 
+
+					if($utf8)
+						echo '<input type="text" id="sensorName" value="'.utf8_encode($sensor_name[$sensor_offset]).'">';
+					else
+						echo '<input type="text" id="sensorName" value="'.utf8_decode($sensor_name[$sensor_offset]).'">';
+				?>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-offset-3 col-xs-4 col-sm-offset-4 col-sm-2 col-md-offset-4 col-md-2">
+				<p><u>Valeur de seuil :</u></p>
+			</div>
+			<div class="col-xs-2 col-sm-2 col-md-2">
+				Minimum : <input id="minVal" type="number" min="0" max="30" value=<?php echo '"'.$sensor_min[0].'"';?>>
+				<br>
+				Maximum : <input id="maxVal" type="number" min="0" max="30" value=<?php echo '"'.$sensor_max[0].'"';?>>
+			</div>
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-xs-offset-2 col-xs-3 col-sm-offset-3 col-sm-2 col-md-offset-4 col-md-2">
+				<p><u>Alertes :</u></p>
+			</div>
+			<div class="col-xs-5 col-sm-4 col-md-3">
+				<?php
+					if ($infMin == 1)
+						echo '<input type="checkbox" id="cbox1" checked>';
+					else
+						echo '<input type="checkbox" id="cbox1">';
+					if ($sensor_name[0] == "" ) 
+						echo "Si ".utf8_encode($sensor_type)." < Min";
+					else
+						echo "Si ".utf8_decode($sensor_name[0])." < Min";
+					echo '<br>';
+					if ($supMax == 1)
+						echo '<input type="checkbox" id="cbox2" checked>';
+					else
+						echo '<input type="checkbox" id="cbox2">';
+					if ($sensor_name[0] == "" ) 
+						echo "Si ".utf8_encode($sensor_type)." > Max";
+					else
+						echo "Si ".utf8_decode($sensor_name[0])." > Max";
+				?>
+			</div>
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-xs-offset-2 col-xs-3 col-sm-offset-3 col-sm-2 col-md-offset-3 col-md-2">
+				<p><u>Association timer :</u></p>
+			</div>
+			<div class="col-xs-2 col-sm-2 col-md-2">
+				<select name="select" id="association">
+					<?php
+					for ($i=0;$i<count($timers_id);$i++){
+						if ( $timers_id[$i] != $timer_associated ){
+							echo '<option value="'.$timers_id[$i].'">'.utf8_decode($database->sqlRequest("SELECT timerNamePerso FROM usertimer WHERE usertimer.timerId = ".$timers_id[$i]." AND usertimer.userID = ".$user_id , "timerNamePerso")[0]).'</option>';
+						}
+						else{
+							echo '<option value="'.$timers_id[$i].'" selected>'.utf8_decode($database->sqlRequest("SELECT timerNamePerso FROM usertimer WHERE usertimer.timerId = ".$timers_id[$i]." AND usertimer.userID = ".$user_id , "timerNamePerso")[0]).'</option>';
+						}
+					}
+					if ($timer_associated == 0){
+						echo '<option value="0" selected>Aucun</option>';
+					}
+					else{
+						echo '<option value="0">Aucun</option>';
+					}
+					?>
+				</select>
+			</div>
+			<div class="col-xs-3 col-sm-3 col-md-3">
+				<?php if ($sensor_name[0] == "" ) 
+					echo "Si ".utf8_encode($sensor_type)." < Min :";
+				else
+					echo "Si ".utf8_decode($sensor_name[0])." < Min :";
+				
+				if(($infMin_associated == 1) || ($assoc == 0))
+					echo '<input type="checkbox" id="infMin" value="on" checked > ';
+				else
+					echo '<input type="checkbox" id="infMin" value="on"> ';
+				?>
+				<br>
+				
+				<?php if ($sensor_name[0] == "" ) 
+					echo "Si Min < ".utf8_encode($sensor_type)." < Max :";
+				else
+					echo "Si Min < ".utf8_decode($sensor_name[0])." < Max :";
+				
+				if(($supMin_associated == 1) || ($assoc == 0))
+					echo '<input type="checkbox" id="supMin" value="on" checked > ';
+				else
+					echo '<input type="checkbox" id="supMin" value="on"> ';
+				?>
+				<br>
+				
+				<?php if ($sensor_name[0] == "" ) 
+					echo "Si ".utf8_encode($sensor_type)." > Max :";
+				else
+					echo "Si ".utf8_decode($sensor_name[0])." > Max :";
+				
+				if(($supMax_associated == 1) || ($assoc == 0))
+					echo '<input type="checkbox" id="supMax" value="on" checked > ';
+				else
+					echo '<input type="checkbox" id="supMax" value="on"> ';
+				?>
+			</div>
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-xs-offset-4 col-xs-4 col-sm-offset-5 col-sm-3 col-md-offset-5 col-md-2">
+				<button type=button onclick="updateName()">Sauvegarder configuration</button>
+			</div>
+		</div>
+	</form>
+	<script src="../vendor/jquery/jquery.min.js"></script>
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	
+</body>
+<script>
+	function updateName(){
+		name = document.getElementById("sensorName").value;
+		association = document.getElementById("association").value;
+		min = document.getElementById("minVal").value;
+		max = document.getElementById("maxVal").value;
+		
+		alertInf = document.getElementById("cbox1").checked;
+		if (alertInf == true)
+			alertInf = 1;
+		else
+			alerInf = 0;
+		
+		alertSup = document.getElementById("cbox2").checked;
+		if (alertSup == true)
+			alertSup = 1;
+		else
+			alertSup = 0;	
+
+		infmin = document.getElementById("infMin").checked;
+		if(infmin == true)
+			infmin = 1;
+		else
+			infmin = 0;
+		
+		supmin = document.getElementById("supMin").checked;
+		if(supmin == true)
+			supmin = 1;
+		else
+			supmin = 0;
+		
+		infmax = document.getElementById("infMax").checked;
+		if(infmax == true)
+			infmax = 1;
+		else
+			infmax = 0;
+		
+		supmax = document.getElementById("supMax").checked;
+		if(supmax == true)
+			supmax = 1;
+		else
+			supmax = 0;
+				
+		$.ajax({
+			type: "GET",
+			url: "saveSensorConf.php",
+			data: {typeId : <?php echo $typeId ?>, alertInf : alertInf, alertSup : alertSup, min: min, max:max, associated: <?php echo $timer_associated ?>, association: association, name: name, sensorId: <?php echo $sensor_id ?>, infMin: infmin, supMin : supmin, infMax : infmax, supMax : supmax , userId: <?php echo $database->select("user", "id", "email", $_SESSION['email'])[0]; ?> },
+			success: function(data){
+				parent.closeAllIFrames(1);
+			}
+		});
+		
+	}
+</script>
+</html>

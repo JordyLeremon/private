@@ -1,0 +1,42 @@
+<?php
+
+session_start();
+require_once('db.php');
+if(!isset($_SESSION['email']) || empty($_SESSION['email']))
+        header('Location: login.php');
+
+$serial=$_GET['serial'];
+
+
+//Requete SQL
+
+$sql = "select id from sensor WHERE serialNumber=".$serial;
+$rowSensor = array();
+$arr = array();
+$i=0;
+
+foreach  ($mysqli->query($sql) as $row) {
+	//Premiere ligne = nom des champs (
+	$sql = "SELECT sensorNamePerso from usersensor where sensorId=".$row['id']." order by date desc limit 10000";
+        $result = $mysqli->query($sql);
+
+	$xls_output = "value;date";
+	$xls_output .= "\n";
+}
+
+foreach  ($mysqli->query($sql) as $row) {
+	$sql = "SELECT value,date from historysensor where sensorId=".$row['id']." order by date desc limit 10000";
+	$result = $mysqli->query($sql);
+
+	//Boucle sur les resultats
+	while($row = $result->fetch_array(MYSQLI_ASSOC))
+	{
+		$xls_output .= "$row[value];$row[date]\n";
+	}
+}
+
+header("Content-type: application/vnd.ms-excel");
+header("Content-disposition: attachment; filename=SaveData_".$serial."_".date("Ymd").".csv");
+print $xls_output;
+exit;
+?>

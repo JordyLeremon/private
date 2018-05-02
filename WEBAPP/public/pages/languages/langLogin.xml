@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<translations>
+
+    <!--
+    ValiderInscription
+    -->
+    <translation id="langConnexion">
+        <eng>Connection</eng>
+        <fr>Connexion</fr>
+    </translation>
+
+    <!--
+    ValiderInscription
+    -->
+    <translation id="langValidateConnect">
+        <eng>Connect</eng>
+        <fr>Se connecter</fr>
+    </translation>
+
+</translations>
