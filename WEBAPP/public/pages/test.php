@@ -97,11 +97,18 @@ for(
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Selfeden</title>
+	<meta charset="utf-8">
+	<title>Selfeden</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
 	<script src="http://code.highcharts.com/stock/highstock.js"></script>
 	<script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+	
+	<script src="jquery.cookie.js"></script>
+    <script src="cookie-checkbox.js"></script>
+	
 </head>
 <body>
 	<!-- Bloc Connexion --> 
@@ -132,18 +139,7 @@ for(
 
 <script type="text/javascript">
 
- var graph = {
-	 dataSource : null,
-	 init : function () {
-		 // Bloc Genere de HighCharts
-	   var element1 = $(element).val();
-		graph.setSeries(element1,10);
-	 },
-	 setSeries : function(ars1,args2) {
-		 	$get
-	 }
-
- }
+ 
 
 
 $(function () { 
@@ -252,7 +248,7 @@ $('#container').highcharts('StockChart', {
 	],
 	credits: {
 		text: '©Selfeden',
-		href: 'http://localhost:8080/testing/indexing.php'
+		href: 'http://localhost:8080/APPLICATION_WEB/WEBAPP/public/pages/test.php'
 		}
 
 }
@@ -268,83 +264,76 @@ $('#container').highcharts('StockChart', {
 	<div class="col-md-10 col-md-offset-1">
 		<div class="panel panel-default" style="width : 1700px ">
 			<div class="panel-heading ">Dashboard</div>
-			            <div class="pull-right">
-						<form action="#" method="get">
-                				<p>	
-								<div>
-								
-								<label for="list" style="float:right">Type selection :</label> </p>
-                					    <select name="list" id="list" onchange="update_Selection();" >
-							<p>	<option  id="list" value="" selected="selected" style="float:right">Choisissez un type</option> </p>
-								</div>
-								<?php
-        		                                               
-                                        		                for ($i=0;$i<count($type_id);$i++){
-								       		//echo '<option value='.$
-												   echo '<option value='.$i.'>'.$type_id[$i].'</option>';
-												   
-										}
-									
-                		                                ?>
-							         </select>
-					 	         </label>
-						</form>
-						<form action="#" method="get">
-                				<p>	<label for="list" style="float:right">device selection :</label> </p>
-                					    <select name="list" id="list" onchange="update_Selection();">
-							<p>	<option value="" id="list" selected="selected" style="float:right">Choisissez un device</option> </p>
-								<?php
-        		                                               
-                        		                                
-                                        		                for ($i=0;$i<count($sensors_id);$i++){
-								       		//echo '<option value='.$i.'>'.$sensors_serials2[$i].'</option>';
-																	echo '<option value='.$i.' selected="selected">'.$sensors_id[$i].'</option>';
-																}
-                		                                ?>
-														<script>
-															for ($i=0;$i<count($type_id);$i++){
-																for ($i=0;$i<count($sensors_id);$i++){
-																	$('#button').click($(function() {
-																var chart = $('#container').highcharts();
-																		chart.series[0].setData(['<option value='.$i.'>'.$sensors_id[$i]."".$sensors_id[$i].'</option>'], false );
-																	}));
-																}
-															};		
-														</script>
-							         </select>
-					 	         </label>
-						</form>
-					
-			
+			            <div class="pull-right"style="float:right">
+<script type="text/javascript">
+  function setCookie(c_name,value,expiredays) {
+        var exdate=new Date()
+        exdate.setDate(exdate.getDate()+expiredays)
+        document.cookie=c_name+ "=" +escape(value)+((expiredays==null) ? "" : ";expires="+exdate)
+    }
 
+    function getCookie(c_name) {
+        if (document.cookie.length>0) {
+            c_start=document.cookie.indexOf(c_name + "=")
+            if (c_start!=-1) { 
+                c_start=c_start + c_name.length+1 
+                c_end=document.cookie.indexOf(";",c_start)
+                if (c_end==-1) c_end=document.cookie.length
+                    return unescape(document.cookie.substring(c_start,c_end))
+            } 
+    	}
+        return null
+    }
+onload=function(){
+document.getElementById('linksNewWindow').checked = getCookie('linksNewWindow')==1? true : false;
+}
+function set_check(){
+setCookie('linksNewWindow', document.getElementById('linksNewWindow').checked? 1 : 0, 100);
+}
+</script>
+						<label  >device selection :</label> 
+<?php
+	for($i=0;$i<count($sensors_name_perso);$i++):
+?>
 
+<div class="checkbox">
+                <label >
+                
+                <input type="checkbox"  data-cookie-checkbox-id="linksNewWindow" data-cookie-checkbox="true" data-cookie-checkbox-key="sensors_name_perso"  data-cookie-checkbox-value="sensors_name_perso<?php echo $sensors_name_perso[$i]; ?>" data-cookie-checkbox-name="sensorsensors_name_perso[]" <?php if(isset($_GET['sensors_name_perso']) && in_array('sensors_name_perso'.$sensors_name_perso[$i], $_GET['sensors_name_perso'])){echo ' checked="checked"';} ?> onchange="set_check();" /> <?php echo $sensors_name_perso[$i]; ?> 
+                
+                
+                </label>
+                </div>
+                <?php
+  endfor;
+?>
 
-							    <?php /*<div class="btn-group">
-                                        <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                        Device selection
-                                            <span class="caret"></span>
-                                        </button>
-                                    <ul class="dropdown-menu pull-right" role="menu">
-                                        <li><a href="#" onClick="changeLocIframe('monthly')">Par mois</a>
-                                        </li>
-                                        <li><a href="#" onClick="changeLocIframe('weekly')">Par semaine</a>
-                                        </li>
-                                        <li><a href="#" onClick="changeLocIframe('daily')">Par jour</a>
-                                        </li>
-								        </ul>
-							     </div>*/ ?>
+<label  >type selection :</label> 
+<?php
+	for($i=0;$i<count($type_id);$i++):
+?>
+
+<div class="checkbox">
+                <label >
+                
+                <input type="checkbox"  data-cookie-checkbox-id="linksNewWindow" data-cookie-checkbox="true" data-cookie-checkbox-key="type_id"  data-cookie-checkbox-value="type_id<?php echo $type_id[$i]; ?>" data-cookie-checkbox-name="type_id[]" <?php if(isset($_GET['type_id']) && in_array('type_id'.$sensors_name_perso[$i], $_GET['type_id'])){echo ' checked="checked"';} ?> onchange="set_check();" /> <?php echo $type_id[$i]; ?> 
+                
+                
+                </label>
+                </div>
+                <?php
+  endfor;
+?>
+				
+							  
 						</div>
-			</div>
+		
 
-			<div class="panel-body">
-
-				<div id="container" > <?php echo $_GET['type_id'].''.$_GET['sensors_id']; ?> </div>
-				<a href="test.php?click=1">
-				<button type="button" id="button">Refresh Data</button>
-				</a>
 			
 
-			</div>
+				<div id="container" >  </div>
+				<button type="button" id="button">Refresh Data</button>
+				
 
 		</div>
 
@@ -353,183 +342,7 @@ $('#container').highcharts('StockChart', {
 </div>
 
 </div>
-					</div>
-					<!-- /.panel-body -->
-				</div>
-			</div>
-		</div>
-		<!-- /.row -->
-    </div>
-    <!-- /#wrapper -->
-
-    <script>
-
-   /* function offset(el) {
-
-
-	    var rect = el.getBoundingClientRect(),
-	    scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
-	    scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-	    return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
-
-    }*/
-
-	/*function center (el) {
-
-    	el.style.left = "0px";
-    	el.style.top = "0px";
-
-    	var divOffset = offset(el.getElementsByTagName("iframe")[0]);
-
-		if( (($(window).width() / 2) - ($(el).width() / 2 )) > divOffset.left){
-
-			el.style.left = Math.abs((divOffset.left - (($(window).width() / 2) - ($(el).width() / 2 )) )) + "px";
-
-		}
-		else{
-
-			el.style.left = "-" + Math.abs((divOffset.left - (($(window).width() / 2) - ($(el).width() / 2 )) )) + "px";
-
-		}
-
-		if( (($(window).height() / 2) - ($(el.getElementsByTagName("iframe")[0]).height() / 2 )) > divOffset.top){
-
-			el.style.top = Math.abs((divOffset.top - (($(window).height() / 2) - ((el.getElementsByTagName("iframe")[0].getBoundingClientRect().bottom - el.getElementsByTagName("iframe")[0].getBoundingClientRect().top) / 2 )) ) ) + "px";
-
-		}
-		else{
-
-			el.style.top = "-" + Math.abs((divOffset.top - (($(window).height() / 2) - ((el.getElementsByTagName("iframe")[0].getBoundingClientRect().bottom - el.getElementsByTagName("iframe")[0].getBoundingClientRect().top) / 2 )) ) ) + "px";
-
-		}
-
-	    var divOffset = offset(el);
-
-    }*/
-
-	/*
-	 *
-	 * When the user clicks on <div>, open the popup
-	 *
-	 */
-	/*function popup(myPopup) {
-
-		if(document.getElementById(myPopup).classList[1] == "show"){
-
-			closeAllIFrames(0);
-
-		}
-		else{
-
-			closeAllIFrames(0);
-	    	var popup = document.getElementById(myPopup);
-	    	popup.classList.toggle("show");
-
-	    	popup.setAttribute("style","width:" + (screen.width / 2.0) + "px");
-	    	popup.getElementsByTagName("iframe")[0].setAttribute("style","height:" + (screen.height / 2.0) + "px");
-
-	    	center(popup);
-
-    	}
-
-    }*/
-
-	/*function closeAllIFrames(val){
-
-		var i = 0;
-		while(document.getElementById("myPopupTimer" + i) != null){
-
-			if(document.getElementById("myPopupTimer" + i).classList[1] == "show"){
-
-				document.getElementById("myPopupTimer" + i).classList.toggle("show");
-
-			}
-			i++;
-
-		}
-
-		i = 0;
-		while(document.getElementById("myPopupSensor" + i) != null){
-
-			if(document.getElementById("myPopupSensor" + i).classList[1] == "show"){
-
-				document.getElementById("myPopupSensor" + i).classList.toggle("show");
-
-			}
-			i++;
-
-		}
-
-
-		i = 0;
-		while(document.getElementById("myPopupGraph" + i) != null){
-
-			if(document.getElementById("myPopupGraph" + i).classList[1] == "show"){
-
-				document.getElementById("myPopupGraph" + i).classList.toggle("show");
-
-			}
-			i++;
-
-		}
-
-		if(val){
-
-			location.reload();
-		}
-
-    }*/
-
-	//Cookies management
-        function createCookie(name,value,days) {
-                if (days) {
-                        var date = new Date();
-                        date.setTime(date.getTime()+(days*24*60*60*1000));
-                        var expires = "; expires="+date.toGMTString();
-                }
-                else var expires = "";
-                document.cookie = name+"="+value+expires+"; path=/";
-        }
-         function readCookie(name) {
-                var nameEQ = name + "=";
-                var ca = document.cookie.split(';');
-                for(var i=0;i < ca.length;i++) {
-                        var c = ca[i];
-                        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-                        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-                }
-                return null;
-        }
-        function eraseCookie(name) {
-                createCookie(name,"",-1);
-        }
- 
-        function update_Selection(){
-                var v=document.getElementById('list').value;
-                if(v)
-                        createCookie('selectedValue',v);
-                else
-                        eraseCookie('selectedValue');
-                self.location.href="http://localhost:8080/APPLICATION_WEB/WEBAPP/public/pages/test.php";
-        }
- 
-//        function init_Selection(){
-//                var v=readCookie('selectedValue');
-//                if(v)document.getElementById('list').options[v].selected=true;
-//        }
-
-//        window.onload=init_Selection;
-	</script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="../dist/js/sb-admin-2.js"></script>
-	<script src="../dist/js/bootstrap-slider.js"></script>
+					
 </body>
 
 </html>

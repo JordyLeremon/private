@@ -116,7 +116,13 @@ $data=array();
                 <script src="jquery.cookie.js"></script>
                 <script src="cookie-checkbox.js"></script>
         </head>
+        <?php
+if(isset($_GET['sensors_id'])){
+	var_dump($_GET['sensors_id']);
+}
+?>
                 <body>
+              
                 <div class="container">
                 <div class="page-header">
                 
@@ -130,26 +136,25 @@ $data=array();
                 <label  >device selection :</label> 
                 <div class="row">
                 <div class="form-group">
+                  
+                <?php
+	for($i=0;$i<count($sensors_id);$i++):
+?>
                 <div class="checkbox">
                 <label >
-                <input data-cookie-checkbox="true" data-cookie-checkbox-key="CookieCheckBoxSample1"  data-cookie-checkbox-value="[]" name="sensors_id[]" type="checkbox" > 
-                <?php
-                 for ($i=0;$i<count($sensors_id);$i++){
-                  echo "$sensors_id[$i]<br/> ";
-                  
-                 }
-                ?>
+                
+                <input type="checkbox"  data-cookie-checkbox="true" data-cookie-checkbox-key="sensors_id"  data-cookie-checkbox-value="sensors_id<?php echo $sensors_id[$i]; ?>" data-cookie-checkbox-name="sensors_id[]" <?php if(isset($_GET['sensors_id']) && in_array('sensors_id'.$sensors_id[$i], $_GET['sensors_id'])){echo ' checked="checked"';} ?> /> <?php echo $sensors_id[$i]; ?> 
+                
+                
                 </label>
                 </div>
-                <div class="checkbox">
-                <label >
-                <input data-cookie-checkbox="true" data-cookie-checkbox-key="CookieCheckBoxSample1"  data-cookie-checkbox-value="[]" name="sensors_id[]" type="checkbox" > 
+               <!-- / <div class="checkbox">
+                <label>
+                <input data-cookie-checkbox="true" data-cookie-checkbox-key="CookieCheckBoxSample1"  data-cookie-checkbox-value="" name="sensors_id[]" type="checkbox" > -->
                 <?php
-                 for ($i=0;$i<count($sensors_id);$i++){
-                  echo " $sensors_id[$i]<br/>"  ;
-                  
-                 }
-                ?>
+  endfor;
+?>
+                
                 </label>
                 </div>
 
@@ -159,6 +164,7 @@ $data=array();
                 <input data-cookie-checkbox="true" data-cookie-checkbox-key="CookieCheckBoxSample1" data-cookie-checkbox-value="01" type="checkbox"> Option 01
                 </label>
                 </div> -->
+
                 <!--<div class="checkbox">
                 <label>
                 <input data-cookie-checkbox="true" data-cookie-checkbox-key="CookieCheckBoxSample1" data-cookie-checkbox-value="02" type="checkbox"> Option 02
@@ -215,12 +221,12 @@ $data=array();
                       enableCookieCheckBox();
                       
                       $('#btnGetChecked').click(function () {
-                       var result = JSON.stringify(getCookieCheckboxValues('CookieCheckBoxSample1'));
+                       var result = JSON.stringify(getCookieCheckboxValues('sensors_id'));
                        alert(result);
                       });
                       
                         $('#btnClearCheck').click(function () {
-                          clearCookieCheckBox('CookieCheckBoxSample1');
+                          clearCookieCheckBox('sensors_id');
                         });
                       
                       });
