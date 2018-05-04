@@ -264,8 +264,9 @@ $('#container').highcharts('StockChart', {
 	<div class="col-md-10 col-md-offset-1">
 		<div class="panel panel-default" style="width : 1700px ">
 			<div class="panel-heading ">Dashboard</div>
-			            <div class="pull-right"style="float:right">
-<script type="text/javascript">
+			            <div class="pull-right">
+						<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+						<script type="text/javascript">
   function setCookie(c_name,value,expiredays) {
         var exdate=new Date()
         exdate.setDate(exdate.getDate()+expiredays)
@@ -284,8 +285,9 @@ $('#container').highcharts('StockChart', {
     	}
         return null
     }
-onload=function(){
-document.getElementById('linksNewWindow').checked = getCookie('linksNewWindow')==1? true : false;
+	window.onload=function(){
+
+document.getElementById('id').checked = console.log(getCookie('linksNewWindow'))==1? true : false;
 }
 function set_check(){
 setCookie('linksNewWindow', document.getElementById('linksNewWindow').checked? 1 : 0, 100);
@@ -316,7 +318,7 @@ setCookie('linksNewWindow', document.getElementById('linksNewWindow').checked? 1
 <div class="checkbox">
                 <label >
                 
-                <input type="checkbox"  data-cookie-checkbox-id="linksNewWindow" data-cookie-checkbox="true" data-cookie-checkbox-key="type_id"  data-cookie-checkbox-value="type_id<?php echo $type_id[$i]; ?>" data-cookie-checkbox-name="type_id[]" <?php if(isset($_GET['type_id']) && in_array('type_id'.$sensors_name_perso[$i], $_GET['type_id'])){echo ' checked="checked"';} ?> onchange="set_check();" /> <?php echo $type_id[$i]; ?> 
+                <input type="checkbox"  Toto-id="linksNewWindow"  Toto="true"  Toto-key="type_id"   Toto-value="type_id<?php echo $type_id[$i]; ?>"  Toto-name="type_id[]" <?php if(isset($_GET['type_id']) && in_array('type_id'.$sensors_name_perso[$i], $_GET['type_id'])){echo ' checked="checked"';} ?> onchange="set_check();" /> <?php echo $type_id[$i]; ?> 
                 
                 
                 </label>
