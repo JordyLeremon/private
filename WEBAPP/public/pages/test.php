@@ -88,10 +88,30 @@ for(
 		
 	}
 
-
-    $data2 = json_encode($data);
-  
+	//$test=array("name" => "Hygro Terre", "data" => $data);
+	$data2 = json_encode($data);
+	//$data2 = json_encode($data);
 	
+
+
+	$cookieName_sensors = json_encode($sensors_id);
+	echo $sensors_id[0];
+	echo $sensors_id[1];
+
+	$cookieName_type =  json_encode($type_id);
+	echo $type_id[0];
+	echo $type_id[1];
+
+
+	//chart: {type: 'line',width: 1520,height: 700},
+	//title: {text: 'Courbe de suivi'},
+	//xAxis: {type: 'datetime'},
+	//yAxis: [{lineColor: '#FF0000',	lineWidth: 1,gridLineWidth: 1,labels: {formatter: function() {return this.value +'Pa';},style: { color: '#FF0000'}},title: {text: 'Pression (Pa)'},plotLines: [{value: 0,width: 1,color: '#FF0000'}]},],
+	//tooltip: { valueSuffix: ' Pa' },
+	//series: [{name: 'Hygro Terre',data: data3},{name: 'result',	data: data3}],
+	//credits: {text: '©Selfeden',href: 'http://localhost:8080/APPLICATION_WEB/WEBAPP/public/pages/test.php'}});
+
+
 
 ?>
 <!DOCTYPE html>
@@ -143,15 +163,13 @@ for(
 
 
 $(function () { 
+var data3 = <?php echo $data2;?>
+
+//options.series[0].data = [[35.00,35.91,36.82,37.73,38.64]];
 
 
 
-var data3 = <?php echo $data2;?>;
-
-
-
-$('#container').highcharts('StockChart', {
-
+var chart = $('#container').highcharts('StockChart', {
 
 	chart: {
 
@@ -166,12 +184,6 @@ $('#container').highcharts('StockChart', {
 		text: 'Courbe de suivi'
 
 	},
-
-	/*rangeSelector : {
-                selected : 1,
-				
-            },*/
-			
 
 
 	xAxis: {
@@ -201,27 +213,6 @@ $('#container').highcharts('StockChart', {
 			}]
 
 	},
-	/*{ // 2ème yaxis (numero 1)
-			lineColor: '#3336FF',
-			lineWidth: 1,
-			gridLineWidth: 2,
-			min:0,
-			tickInterval:0.2,
-			labels: {formatter: function() {return this.value +'mm';
-				},
-				style: {
-					color: '#4572A7'
-				}
-			},
-			title: {
-				text: 'Hygro terre(mm)',
-				style: {
-					color: '#4572A7'
-				}
-			},
-			
-				opposite: true
-		},*/
 		
 	],
 	tooltip: {
@@ -229,32 +220,30 @@ $('#container').highcharts('StockChart', {
         valueSuffix: ' Pa'
     },
 	
-
+	
 	series: [{
-
 		name: 'Hygro Terre',
 		//yAxis: 1,
 		//data: data_click
 		data: data3
 
-	}/*,  {
-
-		name: 'result',
-
-		data: data3
-
-}*/
+	}
 
 	],
 	credits: {
 		text: '©Selfeden',
 		href: 'http://localhost:8080/APPLICATION_WEB/WEBAPP/public/pages/test.php'
 		}
-
-}
-);
-
+		
 });
+$('#button').click(function () {
+	console.log(chart.series);
+    //chart.series.setData([129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 29.9, 71.5, 106.4]);
+});
+});
+
+
+
 </script>
 
 
@@ -266,6 +255,29 @@ $('#container').highcharts('StockChart', {
 			<div class="panel-heading ">Dashboard</div>
 			            <div class="pull-right">
 						<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+					
+
+						
+						<label  >device selection :</label> 
+<?php
+	for($i=0;$i<count($sensors_name_perso);$i++):
+?>
+
+<div class="checkbox">
+                <label >
+                
+                <input type="checkbox"  id="<?php echo $sensors_id[$i]; ?>"    value="<?php echo $sensors_name_perso[$i]; ?>" name="sensorsensors_name_perso[]" <?php if(isset($_GET['sensors_name_perso']) && in_array('sensors_name_perso'.$sensors_name_perso[$i], $_GET['sensors_name_perso'])){echo ' checked="checked"';} ?> onchange="set_check();" /> <?php echo $sensors_name_perso[$i]; ?> 
+                
+                
+                </label>
+                </div>
+                <?php
+  endfor;
+?>
+			
+							  
+						</div>
+
 						<script type="text/javascript">
   function setCookie(c_name,value,expiredays) {
         var exdate=new Date()
@@ -285,56 +297,46 @@ $('#container').highcharts('StockChart', {
     	}
         return null
     }
-	window.onload=function(){
 
-document.getElementById('id').checked = console.log(getCookie('linksNewWindow'))==1? true : false;
+onload=function(){
+	var cookieName_sensors = <?php echo$cookieName_sensors;?>;
+	for (var i = 0; i < cookieName_sensors.length; i++) {
+		document.getElementById(cookieName_sensors[i]).checked = getCookie(cookieName_sensors[i])==1? true : false;
+	}
+	console.log(cookieName_sensors.length);
+
+	
+	
+}
+
+
+function set_check(){
+	var cookieName_sensors = <?php echo $cookieName_sensors;?>;
+	for (var i = 0; i < cookieName_sensors.length; i++) {
+		setCookie(cookieName_sensors[i], document.getElementById(cookieName_sensors[i]).checked? 1 : 0, 100);
+	}
+
+}
+
+/*
+onload=function(){
+document.getElementById('toto').checked = getCookie('toto')==1? true : false;
 }
 function set_check(){
-setCookie('linksNewWindow', document.getElementById('linksNewWindow').checked? 1 : 0, 100);
-}
+setCookie('toto', document.getElementById('toto').checked? 1 : 0, 100);
+}*/
 </script>
-						<label  >device selection :</label> 
-<?php
-	for($i=0;$i<count($sensors_name_perso);$i++):
-?>
-
-<div class="checkbox">
-                <label >
-                
-                <input type="checkbox"  data-cookie-checkbox-id="linksNewWindow" data-cookie-checkbox="true" data-cookie-checkbox-key="sensors_name_perso"  data-cookie-checkbox-value="sensors_name_perso<?php echo $sensors_name_perso[$i]; ?>" data-cookie-checkbox-name="sensorsensors_name_perso[]" <?php if(isset($_GET['sensors_name_perso']) && in_array('sensors_name_perso'.$sensors_name_perso[$i], $_GET['sensors_name_perso'])){echo ' checked="checked"';} ?> onchange="set_check();" /> <?php echo $sensors_name_perso[$i]; ?> 
-                
-                
-                </label>
-                </div>
-                <?php
-  endfor;
-?>
-
-<label  >type selection :</label> 
-<?php
-	for($i=0;$i<count($type_id);$i++):
-?>
-
-<div class="checkbox">
-                <label >
-                
-                <input type="checkbox"  Toto-id="linksNewWindow"  Toto="true"  Toto-key="type_id"   Toto-value="type_id<?php echo $type_id[$i]; ?>"  Toto-name="type_id[]" <?php if(isset($_GET['type_id']) && in_array('type_id'.$sensors_name_perso[$i], $_GET['type_id'])){echo ' checked="checked"';} ?> onchange="set_check();" /> <?php echo $type_id[$i]; ?> 
-                
-                
-                </label>
-                </div>
-                <?php
-  endfor;
-?>
 				
 							  
 						</div>
+						<!--<input type="checkbox" id="<?//php echo $sensors_id[0];?>" onchange="set_check();">
+						<input type="checkbox" id="<?//php echo $sensors_id[1];?>" onchange="set_check();">-->
 		
 
 			
 
 				<div id="container" >  </div>
-				<button type="button" id="button">Refresh Data</button>
+				<button id="button" class="autocompare">Set new data</button>
 				
 
 		</div>
